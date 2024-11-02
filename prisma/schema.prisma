@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  role     Role    @default(User)
+  image    String
+  username String  @db.VarChar(30)
+  password String  @db.VarChar(72)
+  email    String?
+  phone    String
+}
+
+model Address {
+  id          Int    @id @default(autoincrement())
+  numberHours Int
+  street      String @db.VarChar(100)
+  city        String @db.VarChar(50)
+  zip         String @db.VarChar(10)
+  userId      Int
+}
+
+model Product {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(100)
+  image    String
+  price    Float
+  quantity Int
+  Order    Order? @relation(fields: [orderId], references: [id])
+  orderId  Int?
+  cart     cart?  @relation(fields: [cartId], references: [id])
+  cartId   Int?
+}
+
+model Order {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  addressId Int
+  status    Status    @default(pending)
+  products  Product[]
+}
+
+model cart {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  products      Product[]
+  totalPrice    Float
+  totalQuantity Int
+  amount        Int
+}
+
+model payment {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  paymentMethod String   @db.VarChar(20)
+  amount        Float
+  status        Status   @default(pending)
+  date          DateTime @db.DateTime()
+}
+
+enum Status {
+  pending
+  doing
+  done
+}
+
+enum Role {
+  Admin
+  User
+}
