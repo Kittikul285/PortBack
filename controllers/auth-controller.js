@@ -40,6 +40,8 @@ module.exports.me = async (req, res, next) => {
     try{
         const user = await db.user.findMany()
         res.json(user)
+        console.log(user)
+        res.send("bnnnnnnn")
     }catch(err){
         next(err)
     }
